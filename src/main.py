@@ -1,16 +1,20 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from src.users.routes import router
+from src.database import init_models
+
 _DESCRIPTION = """
 Пример решений задания для Backend-разработчика Школы IT 🚀.
 
 ## Пользователи
 
 Для работы с пользователями можно:
-* **создать запись** ;
+* **создать пользователя** ;
 * **получить список** с возможностью фильтрации по полу и заданием лимита.
 """
 
+init_models()
 app = FastAPI(title="task-backend--example",
               description=_DESCRIPTION,
               version="1.0.0",
@@ -19,7 +23,7 @@ app = FastAPI(title="task-backend--example",
 
 @app.get("/", response_class=HTMLResponse, tags=["Main"])
 async def root():
-    """Обработчик  **ГЛАВНОГО** пути"""
+    """Представление страницы приветствия."""
     html_content = """
     <html>
         <head>
@@ -35,6 +39,9 @@ async def root():
     """
     return HTMLResponse(content=html_content)
 
+
+# Регистрация маршрутов от функциональных модулей
+app.include_router(router)
 
 if __name__ == '__main__':
     import uvicorn
