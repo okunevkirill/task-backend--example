@@ -10,6 +10,10 @@ def get_users(session: Session, skip: int = 0, limit: int = 100, gender=None):
     return session.query(User).offset(skip).limit(limit).all()
 
 
+def get_user(db: Session, user_id: int):
+    return db.query(User).get(user_id)
+
+
 def add_user(session: Session, data: UserInputSchema):
     user = User(**data.dict())
     session.add(user)
