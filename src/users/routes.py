@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, status, Depends, Query
+from fastapi import APIRouter, status, Depends, Query, Path, HTTPException
 
 from sqlalchemy.orm import Session
 
@@ -33,4 +33,15 @@ async def add_user(data: schemas.UserInputSchema,
                    session: Session = Depends(get_db_session)):
     """Создать нового пользователя."""
     user = services.add_user(session, data=data)
+    return schemas.UserOutputSchema.from_orm(user)
+
+
+@router.get("/{user_id}", response_model=schemas.UserOutputSchema)
+def get_user(user_id: int = Path(ge=1,
+                                 description="Идентификатор, под которым хранится "
+                                             "информация о конкретном пользователе"),
+             session: Session = Depends(get_db_session)):
+    user = services.get_user(session, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return schemas.UserOutputSchema.from_orm(user)
