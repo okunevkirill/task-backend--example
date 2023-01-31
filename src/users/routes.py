@@ -37,10 +37,11 @@ async def add_user(data: schemas.UserInputSchema,
 
 
 @router.get("/{user_id}", response_model=schemas.UserOutputSchema)
-def get_user(user_id: int = Path(ge=1,
-                                 description="Идентификатор, под которым хранится "
-                                             "информация о конкретном пользователе"),
-             session: Session = Depends(get_db_session)):
+async def get_user(user_id: int = Path(ge=1,
+                                       description="Идентификатор, под которым хранится "
+                                                   "информация о конкретном пользователе"),
+                   session: Session = Depends(get_db_session)):
+    """Получить информацию о пользователе с заданным идентификатором."""
     user = services.get_user(session, user_id=user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
